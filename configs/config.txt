@@ -1,0 +1,10 @@
+--dataset
+BreastCancer
+--technique
+MDS
+--components
+3
+--seed
+1910299034
+--outdir
+results/breast-cancer-wisconsin/MDS/
