@@ -17,7 +17,8 @@ Custom hyperparameters in a textfile i.e. _"./configs/config.txt"_.
 A _results_ folder will contain a timestamp directory with the latest results.
 
 ### Datasets
-* Credit card fraud (https://www.kaggle.com/mlg-ulb/creditcardfraud)
+* The credit card fraud dataset, available from e.g. Kaggle: https://www.kaggle.com/mlg-ulb/creditcardfraud ;
+* The IEEE Fraud detection dataset at https://www.kaggle.com/c/ieee-fraud-detection
 
 ### Techniques
 3 methods specifically tailored to anomaly detection, e.g. one-class classifiers, statistical/density based methods, ... You can e.g. use the methods provided in sk-learn as an inspiration, but there are also other approaches published that can be re-used.
