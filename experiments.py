@@ -10,6 +10,7 @@ import pandas as pd
 import seaborn as sns
 from imblearn.under_sampling import RandomUnderSampler
 from pyod.models.knn import KNN
+from pyod.models.lof import LOF
 from pyod.models.ocsvm import OCSVM
 from scipy.stats import multivariate_normal
 from sklearn import semi_supervised
@@ -208,10 +209,8 @@ def experiments(config_file):
         # ('HBOS', HBOS()),
         # ('IForest', IForest()),
         ('KNN', KNN(), UNSUPERVISED),
-        # ('LOF', LOF()),
-        # ('MCD', MCD()),
-        ('OCSVM', OCSVM(), SEMI_SUPERVISED),
-        ('LabelSpreading', LabelSpreading(), SEMI_SUPERVISED),
+        ('LOF', LOF(), UNSUPERVISED),
+        ('OCSVM', OCSVM(), UNSUPERVISED),
         ('GaussianMixture',
          GaussianMixture(n_components=2, covariance_type='full', random_state=int(args.seed)),
          SEMI_SUPERVISED),
@@ -252,7 +251,16 @@ def experiments(config_file):
 
         elif level == SEMI_SUPERVISED:
             # Only normal labels are known
-            method.fit(X_train_NF, y_train_NF)
+
+            # Undersample majority 'Not Fraud' class only on training
+            if name != 'GaussianMixture':
+                X_train_undersampled, y_train_undersampled = RandomUnderSampler(random_state=int(args.seed)) \
+                    .fit_resample(X_train_F_NF, y_train_F_NF)
+                labels = np.copy(y_train_undersampled)
+                labels[y_train_undersampled == FRAUD] = -1
+                method.fit(X_train_undersampled, labels)
+            else:
+                method.fit(X_train_NF, y_train_NF)
 
         elif level == SUPERVISED:
             # Undersample majority 'Not Fraud' class only on training
