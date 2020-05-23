@@ -2,6 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris, load_breast_cancer
 
+# TODO
+# add
+# Plot example gmm
+#                 plot_gmm(GaussianMixture(n_components=2, covariance_type='full', random_state=int(args.seed)),
+#                              X_train_undersampled,
+#                              outdir=outdir)
 
 def descriptions():
     # dataset_name = "BreastCancerWisconsin"

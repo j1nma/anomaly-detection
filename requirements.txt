@@ -1,3 +1,7 @@
+seaborn
+scipy
+imblearn
+pyod
 numpy
 matplotlib
 pandas
