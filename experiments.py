@@ -271,7 +271,10 @@ def experiments(config_file):
         else:
             raise ("Supervision level not found.")
 
+        # Test
         if name == 'GaussianMixture':
+
+            # Cross validate
             for split_idx, (train_index, valid_index) in enumerate(skf.split(X_cv, y_cv)):
                 X_cv_train, X_cv_valid = X_cv[train_index], X_cv[valid_index]
                 y_cv_train, y_cv_valid = y_cv[train_index], y_cv[valid_index]
@@ -338,58 +341,40 @@ def experiments(config_file):
 
             # Best threshold according to F2
             best_threshold = best_f2_threshold[np.array(f2_cv_scores).argmax()]
-
-            # Test
-
-            # Predict probabilities
-            y_test_probs = (method.score_samples(X_test) < best_threshold).astype(int)
-            log(logfile, classification_report(y_test, y_test_probs, target_names=labels))
             log(logfile, 'Best Threshold: %d' % best_threshold)
 
-            log(logfile, 'Test Precision: %.3f' % precision_score(y_true=y_test, y_pred=y_test_probs))
-            log(logfile, 'Test Recall: %.3f' % recall_score(y_true=y_test, y_pred=y_test_probs))
-            log(logfile, 'Test F2: %.3f' % fbeta_score(y_true=y_test, y_pred=y_test_probs, beta=2))
-            log(logfile, 'Test ROC AUC: %.3f' % roc_auc_score(y_test, y_test_probs))
-            log(logfile, '')
+            # Test
+            # Predict probabilities
+            y_test_pred = (method.score_samples(X_test) < best_threshold).astype(int)
+            y_test_scores = y_test_pred  # The same for Gaussian ROC-AUC
 
-            # Plot heatmap
-            fig, (ax1) = plt.subplots(ncols=1, figsize=(5, 5))
-            cm = pd.crosstab(y_test, y_test_probs, rownames=['Actual'],
-                             colnames=['Predicted'])
-            sns.heatmap(cm, xticklabels=labels, yticklabels=labels, annot=True, ax=ax1, linewidths=.2, fmt='g')
-            plt.title('Confusion Matrix for {}'.format(name), fontsize=14)
-            plt.savefig(outdir + '{}_confusion_matrix.png'.format(name))
-            plt.clf()
-            plt.close(fig)
-
-            # Plot ROC curve
-            fpr, tpr, _ = roc_curve(y_test, y_test_probs)
-            roc_auc_ax.plot(fpr, tpr, marker='.', label=name)
         else:
+            # Test
             # Predict probabilities
             y_test_pred = method.predict(X_test)
             y_test_scores = method.decision_function(X_test)
 
-            # Save results
-            log(logfile, 'Test Precision: %.3f' % precision_score(y_true=y_test, y_pred=y_test_pred))
-            log(logfile, 'Test Recall: %.3f' % recall_score(y_true=y_test, y_pred=y_test_pred))
-            log(logfile, 'Test F2: %.3f' % fbeta_score(y_true=y_test, y_pred=y_test_pred, beta=2))
-            log(logfile, 'Test ROC AUC: %.3f' % roc_auc_score(y_test, y_test_scores))
-            log(logfile, '')
+        # Plot heatmap
+        fig, (ax1) = plt.subplots(ncols=1, figsize=(5, 5))
+        cm = pd.crosstab(y_test, y_test_pred, rownames=['Actual'],
+                         colnames=['Predicted'])
+        sns.heatmap(cm, xticklabels=labels, yticklabels=labels, annot=True, ax=ax1, linewidths=.2, fmt='g')
+        plt.title('Confusion Matrix for {}'.format(name), fontsize=14)
+        plt.savefig(outdir + '{}_confusion_matrix.png'.format(name))
+        plt.clf()
+        plt.close(fig)
 
-            # Plot heatmap
-            fig, (ax1) = plt.subplots(ncols=1, figsize=(5, 5))
-            cm = pd.crosstab(y_test, y_test_pred, rownames=['Actual'],
-                             colnames=['Predicted'])
-            sns.heatmap(cm, xticklabels=labels, yticklabels=labels, annot=True, ax=ax1, linewidths=.2, fmt='g')
-            plt.title('Confusion Matrix for {}'.format(name), fontsize=14)
-            plt.savefig(outdir + '{}_confusion_matrix.png'.format(name))
-            plt.clf()
-            plt.close(fig)
+        # Save results
+        log(logfile, classification_report(y_test, y_test_pred, target_names=labels))
+        log(logfile, 'Test Precision: %.3f' % precision_score(y_true=y_test, y_pred=y_test_pred))
+        log(logfile, 'Test Recall: %.3f' % recall_score(y_true=y_test, y_pred=y_test_pred))
+        log(logfile, 'Test F2: %.3f' % fbeta_score(y_true=y_test, y_pred=y_test_pred, beta=2))
+        log(logfile, 'Test ROC AUC: %.3f' % roc_auc_score(y_test, y_test_scores))
+        log(logfile, '')
 
-            # Plot ROC curve
-            fpr, tpr, _ = roc_curve(y_test, y_test_scores)
-            roc_auc_ax.plot(fpr, tpr, marker='x', label=name)
+        # Plot ROC curve
+        fpr, tpr, _ = roc_curve(y_test, y_test_scores)
+        roc_auc_ax.plot(fpr, tpr, marker='x', label=name)
 
         log(logfile, '---' * 45)
 
