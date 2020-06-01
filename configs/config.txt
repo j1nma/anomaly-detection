@@ -2,5 +2,9 @@
 creditcard
 --seed
 1910299034
+--sampling
+smote
+--fraud_ratio
+0.3
 --outdir
 results/
