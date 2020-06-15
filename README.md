@@ -1,4 +1,6 @@
 ## Anomaly Detection
+<img src="https://github.com/j1nma/anomaly-detection/blob/master/docs/images/XGB_confusion_matrix.png?raw=true" width="350"/>  <img src="https://github.com/j1nma/anomaly-detection/blob/master/docs/images/roc-auc-curve.png?raw=true" width="400"/>
+
 This work does experiments with anomaly / outlier detection methods to find the fraudulent cases. 
 
 Various classifier is utilized, with sampling methods to help the classifier learn the minority class better, and also using a higher cost associated with misclassification of the fraudalent cases. Fitting criteria for evaluation was chosen.
